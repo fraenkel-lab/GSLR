@@ -2,7 +2,7 @@
 
 #SBATCH --partition sched_mem1TB_centos7
 #SBATCH --job-name=LOGIT
-#SBATCH --output=/home/lenail/proteomics/synthetic_proteomics/analysis/logit/multiprocess_%j.out
+#SBATCH --output=/home/lenail/gslr/experiments/algorithms/logit/multiprocess_%j.out
 #SBATCH -N 1
 #SBATCH -n 16
 #SBATCH --mem-per-cpu=8000
@@ -51,12 +51,13 @@ def logit(pathway_id_and_filepath):
 
 if __name__ == "__main__":
 
-	project_root = '/home/lenail/proteomics/synthetic_proteomics/'
+	repo_path = '/home/lenail/gslr/experiments/'
+	data_path = repo_path + 'generated_data/3/'
+	KEGG_path = repo_path + 'KEGG/KEGG_df.filtered.with_correlates.pickle'
+	interactome_path = repo_path + 'algorithms/pcsf/inbiomap_temp.tsv'
+	pathways_df = pd.read_pickle(KEGG_path)
 
-	pathways_df = pd.read_pickle(project_root+'data_generation/KEGG_df.filtered.with_correlates.pickle')
-
-	files = [(pathway_id, project_root+'generated_data/ludwig_svd_normals/'+pathway_id+'_inbiomap_exp.csv') for pathway_id in pathways_df.index.get_level_values(2)]
-
+	files = [(pathway_id, data_path+pathway_id+'_inbiomap_exp.csv') for pathway_id in pathways_df.index.get_level_values(2)]
 
 	pool = multiprocessing.Pool(n_cpus)
 

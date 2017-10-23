@@ -2,7 +2,7 @@
 
 #SBATCH --partition sched_mem1TB_centos7
 #SBATCH --job-name=GSLR
-#SBATCH --output=/home/lenail/proteomics/synthetic_proteomics/analysis/gslr/multiprocess_%j.out
+#SBATCH --output=/home/lenail/gslr/experiments/algorithms/gslr/multiprocess_%j.out
 #SBATCH -N 1
 #SBATCH -n 16
 #SBATCH --mem-per-cpu=8000
@@ -31,7 +31,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
 # from sklearn.model_selection import train_test_split, cross_val_score, KFold
 
-sys.path.append('/home/lenail/proteomics/synthetic_proteomics/analysis/gslr')
+sys.path.append('/home/lenail/gslr/experiments/algorithms/gslr')
 import gslr
 
 def GSLR(pathway_id_and_filepath_and_nodes_and_edges_and_costs):
@@ -83,16 +83,18 @@ def GSLR(pathway_id_and_filepath_and_nodes_and_edges_and_costs):
 
 if __name__ == "__main__":
 
-	project_root = '/home/lenail/proteomics/synthetic_proteomics/'
+	repo_path = '/home/lenail/gslr/experiments/'
+	data_path = repo_path + 'generated_data/3/'
+	KEGG_path = repo_path + 'KEGG/KEGG_df.filtered.with_correlates.pickle'
+	interactome_path = repo_path + 'algorithms/pcsf/inbiomap_temp.tsv'
+	pathways_df = pd.read_pickle(KEGG_path)
 
-	inbiomap_experimentally = pd.read_csv(project_root+'analysis/pcsf/inbiomap_temp.tsv', sep='\t', names=['protein1','protein2','cost'])
+	inbiomap_experimentally = pd.read_csv(interactome_path, sep='\t', names=['protein1','protein2','cost'])
 	(edges, nodes) = pd.factorize(inbiomap_experimentally[["protein1","protein2"]].unstack())
 	edges = edges.reshape(inbiomap_experimentally[["protein1","protein2"]].shape, order='F')
 	costs = inbiomap_experimentally.cost.values
 
-	pathways_df = pd.read_pickle(project_root+'data_generation/KEGG_df.filtered.with_correlates.pickle')
-
-	inputs = [(pathway_id, project_root+'generated_data/ludwig_svd_normals/'+pathway_id+'_inbiomap_exp.csv', nodes, edges, costs) for pathway_id in pathways_df.index.get_level_values(2)]
+	inputs = [(pathway_id, data_path+pathway_id+'_inbiomap_exp.csv', nodes, edges, costs) for pathway_id in pathways_df.index.get_level_values(2)]
 
 	pool = multiprocessing.Pool(n_cpus)
 

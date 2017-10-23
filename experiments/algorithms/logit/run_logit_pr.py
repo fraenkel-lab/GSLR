@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #SBATCH --partition sched_mem1TB_centos7
-#SBATCH --job-name=LOGIT_GMM
+#SBATCH --job-name=LOGIT
 #SBATCH --output=/home/lenail/gslr/experiments/algorithms/logit/multiprocess_%j.out
 #SBATCH -N 1
 #SBATCH -n 16
@@ -46,22 +46,22 @@ def logit(pathway_id_and_filepath):
 	features = features.ix[0, features.loc[0].nonzero()[0].tolist()].index.tolist()
 	scores = list(classifier.scores_.values())
 
-	# features = coefs[coefs != 0].dropna(axis=1, how='all').fillna(0)
-
 	return pathway_id, scores, features
 
 
 if __name__ == "__main__":
 
 	repo_path = '/home/lenail/gslr/experiments/'
-	data_path = repo_path + 'generated_data/4/'
+	data_path = repo_path + 'generated_data/3/'
 	KEGG_path = repo_path + 'KEGG/KEGG_df.filtered.with_correlates.pickle'
 	interactome_path = repo_path + 'algorithms/pcsf/inbiomap_temp.tsv'
 	pathways_df = pd.read_pickle(KEGG_path)
 
 	files = [(pathway_id, data_path+pathway_id+'_inbiomap_exp.csv') for pathway_id in pathways_df.index.get_level_values(2)]
+
 	pool = multiprocessing.Pool(n_cpus)
+
 	results = pool.map(logit, files)
 
-	pickle.dump(results, open('logit_gmm_results.pickle', 'wb'))
+	pickle.dump(results, open('logit_pr_results.pickle', 'wb'))
 
