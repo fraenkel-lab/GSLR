@@ -1,6 +1,6 @@
 *.xlsx
 sftp-config.json
-generated_data
+experiments/generated_data
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
