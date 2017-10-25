@@ -1,6 +1,7 @@
 *.xlsx
 sftp-config.json
 experiments/generated_data
+**/**_pr_**.pickle
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
