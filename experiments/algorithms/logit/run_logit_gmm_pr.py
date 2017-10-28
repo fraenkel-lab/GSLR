@@ -42,6 +42,9 @@ def logit(pathway_id_and_filepath):
 	classifier.fit(dataset.values, labels)
 	scores = list(classifier.scores_.values())
 
+	# features = pd.DataFrame(W_hat, columns=dataset.columns)
+	# features = features.columns[(features != 0).any()].tolist()
+
 	return pathway_id, scores, classifier.coefs_paths_, classifier.Cs_
 
 

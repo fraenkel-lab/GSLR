@@ -31,7 +31,7 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import StratifiedKFold
 # from sklearn.model_selection import train_test_split, cross_val_score, KFold
 
-sys.path.append('/home/lenail/gslr/experiments/algorithms/gslr')
+sys.path.append('/home/lenail/gslr/gslr')
 import gslr
 
 def GSLR(filepath_and_pathway_ids_and_nodes_and_edges):
