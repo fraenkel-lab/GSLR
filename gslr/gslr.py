@@ -1,7 +1,7 @@
 import collections
 import math
 import numpy as np
-# import numba
+import numba
 
 import pcst_fast
 
