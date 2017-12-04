@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Graph-Sparse Logistic Regression &mdash; GSLR 0.0.1 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+        <link rel="index" title="Index"
+              href="genindex.html"/>
+        <link rel="search" title="Search" href="search.html"/>
+    <link rel="top" title="GSLR 0.0.1 documentation" href="#"/> 
+
+  
+  <script src="_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+   
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="#" class="icon icon-home"> GSLR
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Graph-Sparse Logistic Regression</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">GSLR</a>
+        
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Graph-Sparse Logistic Regression</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-gslr">
+<span id="graph-sparse-logistic-regression"></span><h1>Graph-Sparse Logistic Regression<a class="headerlink" href="#module-gslr" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="gslr.GraphOptions">
+<em class="property">class </em><code class="descclassname">gslr.</code><code class="descname">GraphOptions</code><span class="sig-paren">(</span><em>edges</em>, <em>root</em>, <em>num_clusters</em>, <em>pruning</em><span class="sig-paren">)</span><a class="headerlink" href="#gslr.GraphOptions" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="attribute">
+<dt id="gslr.GraphOptions.edges">
+<code class="descname">edges</code><a class="headerlink" href="#gslr.GraphOptions.edges" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gslr.GraphOptions.num_clusters">
+<code class="descname">num_clusters</code><a class="headerlink" href="#gslr.GraphOptions.num_clusters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gslr.GraphOptions.pruning">
+<code class="descname">pruning</code><a class="headerlink" href="#gslr.GraphOptions.pruning" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gslr.GraphOptions.root">
+<code class="descname">root</code><a class="headerlink" href="#gslr.GraphOptions.root" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="gslr.gslr">
+<code class="descclassname">gslr.</code><code class="descname">gslr</code><span class="sig-paren">(</span><em>X</em>, <em>y</em>, <em>W0</em>, <em>sparsity_low</em>, <em>sparsity_high</em>, <em>graph_opts</em>, <em>steps=None</em>, <em>verbosity_level=0</em>, <em>graph_proj_max_num_iter=20</em>, <em>edge_costs=None</em>, <em>edge_costs_multiplier=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gslr.html#gslr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gslr.gslr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Performs softmax regression with graph-sparsity constraints.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>np.array</em>) – the n x d data matrix (n examples in dimension d)</li>
+<li><strong>y</strong> (<em>np.array</em>) – the n-dimensional label vector. Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.</li>
+<li><strong>W0</strong> (<em>np.array</em>) – the c x d weight matrix</li>
+<li><strong>sparsity_low</strong> (<em>int</em>) – the (approximate) lower bound for the output sparsity</li>
+<li><strong>sparsity_high</strong> (<em>int</em>) – the (approximate) upper bound for the output sparsity</li>
+<li><strong>graph_opts</strong> (<a class="reference internal" href="#gslr.GraphOptions" title="gslr.GraphOptions"><em>GraphOptions</em></a>) – passed directly to <cite>pcst_fast</cite></li>
+<li><strong>steps</strong> (<em>np.array</em>) – the step size schedule, represented by a matrix of size num_steps x num_choices. In each iteration, the algorithm tries all current choices for the step size and chooses the one that makes largest progress.</li>
+<li><strong>verbosity_level</strong> (<em>int</em>) – indicates whether intermediate output should be printed verbosity_level - 1 is being passed to pcst_fast</li>
+<li><strong>graph_proj_max_num_iter</strong> (<em>int</em>) – the maximum number of iterations in the graph-sparsity projection.</li>
+<li><strong>edge_costs</strong> (<em>np.array</em>) – a real vector with non-negative edge costs</li>
+<li><strong>edge_costs_multiplier</strong> (<em>np.array</em>) – a factor weighing edge costs vs prizes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the final c x d weight matrix
+(np.array): the loss at each step, shape is (steps x 1)</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gslr.softmax_gradient">
+<code class="descclassname">gslr.</code><code class="descname">softmax_gradient</code><a class="reference internal" href="_modules/gslr.html#softmax_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gslr.softmax_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the multi-class softmax gradient.</p>
+<p>The gradient is for the <em>average</em> loss.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>np.array</em>) – the n x d data matrix (n examples in dimension d)</li>
+<li><strong>y</strong> (<em>np.array</em>) – the n-dimensional label vector. Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.</li>
+<li><strong>W</strong> (<em>np.array</em>) – the c x d weight matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the gradient of W as a C x d matrix.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gslr.softmax_loss">
+<code class="descclassname">gslr.</code><code class="descname">softmax_loss</code><a class="reference internal" href="_modules/gslr.html#softmax_loss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gslr.softmax_loss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the softmax loss.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>X</strong> (<em>np.array</em>) – the n x d data matrix (n examples in dimension d)</li>
+<li><strong>y</strong> (<em>np.array</em>) – the n-dimensional label vector. Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.</li>
+<li><strong>W</strong> (<em>np.array</em>) – the c x d weight matrix</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the <em>average</em> loss as a scalar.</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gslr.graph_proj_sparsity">
+<code class="descclassname">gslr.</code><code class="descname">graph_proj_sparsity</code><span class="sig-paren">(</span><em>prizes</em>, <em>sparsity_low</em>, <em>sparsity_high</em>, <em>opts</em>, <em>verbosity_level</em>, <em>max_num_iter=30</em>, <em>edge_costs=None</em>, <em>edge_costs_multiplier=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gslr.html#graph_proj_sparsity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gslr.graph_proj_sparsity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Projects the input onto the graph sparsity model.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>prizes</strong> (<em>np.array</em>) – a real vector with non-negative node prizes (= parameter coefficients)</li>
+<li><strong>sparsity_low</strong> (<em>int</em>) – the (approximate) lower bound for the output sparsity</li>
+<li><strong>sparsity_high</strong> (<em>int</em>) – the (approximate) upper bound for the output sparsity</li>
+<li><strong>opts</strong> (<a class="reference internal" href="#gslr.GraphOptions" title="gslr.GraphOptions"><em>GraphOptions</em></a>) – passed directly to <cite>pcst_fast</cite></li>
+<li><strong>verbosity_level</strong> (<em>int</em>) – indicates whether intermediate output should be printed verbosity_level - 1 is being passed to pcst_fast</li>
+<li><strong>max_num_iter</strong> (<em>int</em>) – maximum number of iterations</li>
+<li><strong>edge_costs</strong> (<em>np.array</em>) – a real vector with non-negative edge costs</li>
+<li><strong>edge_costs_multiplier</strong> (<em>np.array</em>) – a factor weighing edge costs vs prizes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the vector of graph-sparse prizes (0 for nodes not in the PCSF solution)
+(np.array): the list of indices of selected vertices
+(np.array): the list of indices of the selected edges</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gslr.proj_softmax_matrix">
+<code class="descclassname">gslr.</code><code class="descname">proj_softmax_matrix</code><span class="sig-paren">(</span><em>W</em>, <em>sparsity_low</em>, <em>sparsity_high</em>, <em>opts</em>, <em>verbosity_level</em>, <em>graph_proj_max_num_iter</em>, <em>edge_costs=None</em>, <em>edge_costs_multiplier=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gslr.html#proj_softmax_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gslr.proj_softmax_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>W</strong> (<em>np.array</em>) – the c x d weight matrix</li>
+<li><strong>sparsity_low</strong> (<em>int</em>) – the (approximate) lower bound for the output sparsity</li>
+<li><strong>sparsity_high</strong> (<em>int</em>) – the (approximate) upper bound for the output sparsity</li>
+<li><strong>opts</strong> (<a class="reference internal" href="#gslr.GraphOptions" title="gslr.GraphOptions"><em>GraphOptions</em></a>) – passed directly to <cite>pcst_fast</cite></li>
+<li><strong>verbosity_level</strong> (<em>int</em>) – indicates whether intermediate output should be printed verbosity_level - 1 is being passed to pcst_fast</li>
+<li><strong>graph_proj_max_num_iter</strong> (<em>int</em>) – the maximum number of iterations in the graph-sparsity projection.</li>
+<li><strong>edge_costs</strong> (<em>np.array</em>) – a real vector with non-negative edge costs</li>
+<li><strong>edge_costs_multiplier</strong> (<em>np.array</em>) – a factor weighing edge costs vs prizes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">the graph-sparse c x d weight matrix</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(np.array)</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           <div class="articleComments">
+            
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2017, Ludwig Schmidt, Alexander LeNail.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'./',
+            VERSION:'0.0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true,
+            SOURCELINK_SUFFIX: '.txt'
+        };
+    </script>
+      <script type="text/javascript" src="_static/jquery.js"></script>
+      <script type="text/javascript" src="_static/underscore.js"></script>
+      <script type="text/javascript" src="_static/doctools.js"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
