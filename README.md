@@ -1,6 +1,13 @@
 # Graph-Sparse Logistic Regression
 
-This repository contains a the source code and information relating to Graph-Sparse Logistic Regression.
+### Table of contents
+
+- [Motivation](#motivation)
+- [Installation](#installation)
+- [Documentation](#documentation)
+- [Example Usage](#example-usage)
+
+
 
 ## Motivation
 
@@ -11,11 +18,15 @@ The motivation for Graph-Sparse Logistic Regression is to constrain classificati
 
 
 ## Installation
-
-
-
+```
+pip install gslr
+```
 ## Documentation
 
+See the [docs](https://fraenkel-lab.github.io/GSLR/).
 
+## Example Usage
+
+See the [`examples`](examples) directory
 
 
