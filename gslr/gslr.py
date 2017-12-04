@@ -1,23 +1,44 @@
-import collections
+#!/usr/bin/env python
+
+# Core python modules
+import sys
+import os
 import math
+
+# Peripheral python modules
+import collections
+
+# python external libraries
 import numpy as np
 import numba
 
-import pcst_fast
+# lab modules
+from pcst_fast import pcst_fast
 
-# Computes the softmax gradient for the following inputs:
-# X is the n x d data matrix (n examples in dimension d)
-# y is the n-dimensional label vector.
-#   Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.
-# W is the c x d weight matrix
-# The function returns the gradient of W as a C x d matrix.
-# The gradient is for the *average* loss.
+__all__ = ["GraphOptions", "gslr", "softmax_gradient", "softmax_loss", "graph_proj_sparsity", "proj_softmax_matrix"]
+
+
 @numba.jit
 def softmax_gradient(X, y, W):
+    """
+    Computes the multi-class softmax gradient.
+
+    The gradient is for the *average* loss.
+
+    Arguments:
+        X (np.array): the n x d data matrix (n examples in dimension d)
+        y (np.array): the n-dimensional label vector. Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.
+        W (np.array): the c x d weight matrix
+
+    Returns:
+        (np.array): the gradient of W as a C x d matrix.
+    """
+
     # TODO: make this work with nopython=True
     assert len(X.shape) == 2
     n, d = X.shape
     assert y.shape == (n,)
+
     assert len(W.shape) == 2
     assert W.shape[1] == d
     c = W.shape[0]
@@ -39,20 +60,29 @@ def softmax_gradient(X, y, W):
             if jj == cur_y:
                 continue
             G[jj,:] -= exp_prod[ii, jj] / denom[ii] * cur_x
+
     return -G / n
 
-# Computes the softmax loss for the following inputs:
-# X is the n x d data matrix (n examples in dimension d)
-# y is the n-dimensional label vector.
-#   Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.
-# W is the c x d weight matrix
-# The function returns the *average* loss as a scalar.
+
 @numba.jit
 def softmax_loss(X, y, W):
+    """
+    Computes the softmax loss.
+
+    Arguments:
+        X (np.array): the n x d data matrix (n examples in dimension d)
+        y (np.array): the n-dimensional label vector. Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.
+        W (np.array): the c x d weight matrix
+
+    Returns:
+        (np.array): the *average* loss as a scalar.
+    """
+
     # TODO: make this work with nopython=True
     assert len(X.shape) == 2
     n, d = X.shape
     assert y.shape == (n,)
+
     assert len(W.shape) == 2
     assert W.shape[1] == d
     c = W.shape[0]
@@ -70,31 +100,45 @@ def softmax_loss(X, y, W):
         cur_y = y[ii]
         cur_x = X[ii,:]
         total_loss += prod_normalized[ii, cur_y] - math.log(denom[ii])
+
     return -total_loss / n
+
+
 
 GraphOptions = collections.namedtuple(
     'GraphOptions',
     ['edges', 'root', 'num_clusters', 'pruning'])
-# Projects the input onto the graph sparsity model.
-# prizes is a real vector with non-negative node prizes
-#     (= parameter coefficients)
-# sparsity_low and sparsity_high are the (approximate) upper and lower bounds
-#     for the output sparsity
-# opts.edges, opts.root, num_clusters, and opts.pruning are directly passed
-#     to pcst_fast
-# verbosity_level indicates whether intermediate output should be printed
-#     verbosity_level - 1 is being passed to pcst_fast
-# edge_costs is a real vector with non-negative edge costs
-# edge_costs_multiplier: a factor weighing edge costs vs prizes
+
+
 def graph_proj_sparsity(prizes, sparsity_low, sparsity_high, opts, verbosity_level, max_num_iter=30, edge_costs=None, edge_costs_multiplier=None):
+    """
+    Projects the input onto the graph sparsity model.
+
+    Arguments:
+        prizes (np.array): a real vector with non-negative node prizes (= parameter coefficients)
+        sparsity_low (int): the (approximate) lower bound for the output sparsity
+        sparsity_high (int): the (approximate) upper bound for the output sparsity
+        opts (GraphOptions): passed directly to `pcst_fast`
+        verbosity_level (int): indicates whether intermediate output should be printed verbosity_level - 1 is being passed to pcst_fast
+        max_num_iter (int): maximum number of iterations
+        edge_costs (np.array): a real vector with non-negative edge costs
+        edge_costs_multiplier (np.array): a factor weighing edge costs vs prizes
+
+    Returns:
+        (np.array): the vector of graph-sparse prizes (0 for nodes not in the PCSF solution)
+        (np.array): the list of indices of selected vertices
+        (np.array): the list of indices of the selected edges
+    """
+
     num_v, = prizes.shape
     num_e, _ = opts.edges.shape
-    costs1 = np.ones(num_e)
+
     if edge_costs is not None:
         assert edge_costs_multiplier is not None
-        costs = costs1 + edge_costs_multiplier * edge_costs
+        costs = edge_costs_multiplier * edge_costs
     else:
-        costs = costs1
+        costs = np.ones(num_e)
+
     lambda_r = 0.0
     lambda_l = 3.0 * np.sum(prizes)
     min_nonzero_prize = 0.0
@@ -103,19 +147,19 @@ def graph_proj_sparsity(prizes, sparsity_low, sparsity_high, opts, verbosity_lev
             min_nonzero_prize = prizes[ii]
     eps = 0.01 * min_nonzero_prize
 
-    if verbosity_level >= 1:
-        print('Initial lambda_l = {}   lambda_r = {}   eps = {}'.format(lambda_l, lambda_r, eps))
+    if verbosity_level >= 2:
+        print("Initial lambda_l = "+str(lambda_l)+"   lambda_r = "+str(lambda_r)+"   eps = "+str(eps))
 
     num_iter = 0
     while lambda_l - lambda_r > eps and num_iter < max_num_iter:
         num_iter += 1
         lambda_m = (lambda_l + lambda_r) / 2.0
-        cur_vertices, cur_edges = pcst_fast.pcst_fast(opts.edges, prizes, lambda_m * costs, opts.root, opts.num_clusters, opts.pruning, verbosity_level - 1)
+        cur_vertices, cur_edges = pcst_fast(opts.edges, prizes, lambda_m * costs, opts.root, opts.num_clusters, opts.pruning, verbosity_level - 1)
         cur_sparsity = cur_vertices.size
-        if verbosity_level >= 1:
-            print('lambda_l = {}   lambda_r = {}   lambda_m = {}   cur_sparsity = {}'.format(lambda_l, lambda_r, lambda_m, cur_sparsity))
+        if verbosity_level >= 2:
+            print("lambda_l = "+str(lambda_l)+"   lambda_r = "+str(lambda_r)+"   lambda_m = "+str(lambda_m)+"   cur_sparsity = "+str(cur_sparsity))
         if cur_sparsity >= sparsity_low and cur_sparsity <= sparsity_high:
-            if verbosity_level >= 1:
+            if verbosity_level >= 2:
                 print('Returning intermediate solution for lambda_m')
             result = np.zeros_like(prizes)
             result[cur_vertices] = prizes[cur_vertices]
@@ -124,40 +168,64 @@ def graph_proj_sparsity(prizes, sparsity_low, sparsity_high, opts, verbosity_lev
             lambda_r = lambda_m
         else:
             lambda_l = lambda_m
-    cur_vertices, cur_edges = pcst_fast.pcst_fast(opts.edges, prizes, lambda_l * costs, opts.root, opts.num_clusters, opts.pruning, verbosity_level - 1)
+    cur_vertices, cur_edges = pcst_fast(opts.edges, prizes, lambda_l * costs, opts.root, opts.num_clusters, opts.pruning, verbosity_level - 1)
     cur_sparsity = cur_vertices.size
     if cur_sparsity < sparsity_low:
-        print('WARNING: returning sparsity {} although minimum sparsity {} was requested.'.format(cur_sparsity, sparsity_low))
-    if verbosity_level >= 1:
-        print('Returning final solution for lambda_l (cur_sparsity = {})'.format(cur_sparsity))
+        print("WARNING: returning sparsity "+str(cur_sparsity)+" although minimum sparsity "+str(sparsity_low)+" was requested.")
+    if verbosity_level >= 2:
+        print("Returning final solution for lambda_l (cur_sparsity = "+str(cur_sparsity)+")")
     result = np.zeros_like(prizes)
     result[cur_vertices] = prizes[cur_vertices]
     return result, cur_vertices, cur_edges
 
 
+def proj_softmax_matrix(W, sparsity_low, sparsity_high, opts, verbosity_level, graph_proj_max_num_iter, edge_costs=None, edge_costs_multiplier=None):
+    """
 
-# Performs softmax regression with graph-sparsity constraints for the following
-# inputs:
-# X is the n x d data matrix (n examples in dimension d)
-# y is the n-dimensional label vector.
-#     Each entry is an integer between 0 and c-1 (inclusive), where c is the
-#     number of classes.
-# W0 is the c x d weight matrix
-# sparsity_low and sparsity_high are the (approximate) upper and lower bounds
-#     for the output sparsity
-# graph_opts.edges, graph_opts.root, graph_opts.num_clusters, and
-#     graph_opts.pruning are directly passed to graph_proj_sparsity (and hence
-#     to pcst_fast)
-# steps is the step size schedule, represented by a matrix of size
-#     num_steps x num_choices. In each iteration, the algorithm tries all current
-#     choices for the step size and chooses the one that makes largest progress.
-# verbosity_level indicates whether intermediate output should be printed
-#     verbosity_level - 1 is being passed to graph_proj_sparsity.
-# graph_proj_max_num_iter is the maximum number of iterations in the
-#     graph-sparsity projection.
-# edge_costs is a real vector with non-negative edge costs
-# edge_costs_multiplier: a factor weighing edge costs vs prizes
+
+    Arguments:
+        W (np.array): the c x d weight matrix
+        sparsity_low (int): the (approximate) lower bound for the output sparsity
+        sparsity_high (int): the (approximate) upper bound for the output sparsity
+        opts (GraphOptions): passed directly to `pcst_fast`
+        verbosity_level (int): indicates whether intermediate output should be printed verbosity_level - 1 is being passed to pcst_fast
+        graph_proj_max_num_iter (int): the maximum number of iterations in the graph-sparsity projection.
+        edge_costs (np.array): a real vector with non-negative edge costs
+        edge_costs_multiplier (np.array): a factor weighing edge costs vs prizes
+
+    Returns:
+        (np.array): the graph-sparse c x d weight matrix
+    """
+
+    c, d = W.shape
+    W2 = np.square(W)
+    for ii in range(c):
+        W2[ii,:], _, _ = graph_proj_sparsity(W2[ii,:], sparsity_low, sparsity_high, opts, verbosity_level, graph_proj_max_num_iter, edge_costs, edge_costs_multiplier)
+    return np.multiply(np.sign(W), np.sqrt(W2))
+
+
 def gslr(X, y, W0, sparsity_low, sparsity_high, graph_opts, steps=None, verbosity_level=0, graph_proj_max_num_iter=20, edge_costs=None, edge_costs_multiplier=None):
+    """
+    Performs softmax regression with graph-sparsity constraints.
+
+    Arguments:
+        X (np.array): the n x d data matrix (n examples in dimension d)
+        y (np.array): the n-dimensional label vector. Each entry is an integer between 0 and c-1 (inclusive), where c is the number of classes.
+        W0 (np.array): the c x d weight matrix
+        sparsity_low (int): the (approximate) lower bound for the output sparsity
+        sparsity_high (int): the (approximate) upper bound for the output sparsity
+        graph_opts (GraphOptions): passed directly to `pcst_fast`
+        steps (np.array): the step size schedule, represented by a matrix of size num_steps x num_choices. In each iteration, the algorithm tries all current choices for the step size and chooses the one that makes largest progress.
+        verbosity_level (int): indicates whether intermediate output should be printed verbosity_level - 1 is being passed to pcst_fast
+        graph_proj_max_num_iter (int): the maximum number of iterations in the graph-sparsity projection.
+        edge_costs (np.array): a real vector with non-negative edge costs
+        edge_costs_multiplier (np.array): a factor weighing edge costs vs prizes
+
+    Returns:
+        (np.array): the final c x d weight matrix
+        (np.array): the loss at each step, shape is (steps x 1)
+    """
+
     assert len(steps.shape) == 2
     num_steps, num_choices = steps.shape
 
@@ -165,17 +233,17 @@ def gslr(X, y, W0, sparsity_low, sparsity_high, graph_opts, steps=None, verbosit
     losses[0] = softmax_loss(X, y, W0)
     W_cur = np.copy(W0)
     for ii in range(num_steps):
-        print('iteration {}:'.format(ii + 1))
-        grad = softmax_gradient(X, y, W_cur)
+        print("iteration "+str(ii+1)+":")
+        gradients = softmax_gradient(X, y, W_cur)
         best_loss = losses[ii]
         best_step_size = 0.0
-        #print('initially best loss {}'.format(best_loss))
+        # print("initially best loss "+str(best_loss))
         for step_size in steps[ii,:]:
-            W_tmp = W_cur - step_size * grad
+            W_tmp = W_cur - step_size * gradients
             # print('before')
             # print(W_tmp)
             # print(softmax_loss(X, y, W_tmp))
-            W_tmp = proj_softmax_matrix(W_tmp, sparsity_low, sparsity_high, graph_opts, verbosity_level - 1, graph_proj_max_num_iter, edge_costs, edge_costs_multiplier)
+            W_tmp = proj_softmax_matrix(W_tmp, sparsity_low, sparsity_high, graph_opts, verbosity_level, graph_proj_max_num_iter, edge_costs, edge_costs_multiplier)
             # print('after')
             # print(W_tmp)
             # print(softmax_loss(X, y, W_tmp))
@@ -184,22 +252,18 @@ def gslr(X, y, W0, sparsity_low, sparsity_high, graph_opts, steps=None, verbosit
                 best_loss = loss_next
                 best_step_size = step_size
             if verbosity_level >= 1:
-                print('  loss_cur = {}   loss_next = {}   step_size = {}'.format(losses[ii], loss_next, step_size))
+                print("  loss_cur = "+str(losses[ii])+"   loss_next = "+str(loss_next)+"   step_size = "+str(step_size))
         if verbosity_level >= 1:
-            print('  best_step_size: {}'.format(best_step_size))
-        W_cur -= best_step_size * grad
-        W_cur = proj_softmax_matrix(W_cur, sparsity_low, sparsity_high, graph_opts, verbosity_level - 1, graph_proj_max_num_iter, edge_costs, edge_costs_multiplier)
+            print("  best_step_size: "+str(best_step_size))
+        W_cur -= best_step_size * gradients
+        W_cur = proj_softmax_matrix(W_cur, sparsity_low, sparsity_high, graph_opts, verbosity_level, graph_proj_max_num_iter, edge_costs, edge_costs_multiplier)
         losses[ii + 1] = softmax_loss(X, y, W_cur)
+
     return W_cur, losses
 
-# Helper functions
-def proj_softmax_matrix(W, sparsity_low, sparsity_high, opts, verbosity_level, graph_proj_max_num_iter, edge_costs=None, edge_costs_multiplier=None):
-    c, d = W.shape
-    W2 = np.square(W)
-    for ii in range(c):
-        W2[ii,:], _, _ = graph_proj_sparsity(W2[ii,:], sparsity_low, sparsity_high, opts, verbosity_level, graph_proj_max_num_iter, edge_costs, edge_costs_multiplier)
-    return np.multiply(np.sign(W), np.sqrt(W2))
 
+
+# Helper functions
 def predict(X, W):
     return np.argmax(np.dot(X, W.transpose()), axis=1)
 

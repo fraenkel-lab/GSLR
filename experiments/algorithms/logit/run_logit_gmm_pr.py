@@ -2,7 +2,7 @@
 
 #SBATCH --partition sched_mem1TB_centos7
 #SBATCH --job-name=LOGIT_GMM_PR
-#SBATCH --output=/home/lenail/gslr/experiments/algorithms/logit/multiprocess_%j.out
+#SBATCH --output=/scratch/users/lenail/gslr/experiments/algorithms/logit/multiprocess_%j.out
 #SBATCH -N 1
 #SBATCH -n 16
 #SBATCH --mem-per-cpu=8000
@@ -38,7 +38,7 @@ def logit(pathway_id_and_filepath):
 	dataset = pd.read_csv(filepath, index_col=0)
 	labels = dataset.index.tolist()
 
-	classifier = LogisticRegressionCV(solver='liblinear', penalty='l1', Cs=16, cv=10)
+	classifier = LogisticRegressionCV(solver='liblinear', penalty='l2', Cs=16, cv=10)
 	classifier.fit(dataset.values, labels)
 	scores = list(classifier.scores_.values())
 
@@ -50,7 +50,7 @@ def logit(pathway_id_and_filepath):
 
 if __name__ == "__main__":
 
-	repo_path = '/home/lenail/gslr/experiments/'
+	repo_path = '/scratch/users/lenail/gslr/experiments/'
 	data_path = repo_path + 'generated_data/4/'
 	KEGG_path = repo_path + 'KEGG/KEGG_df.filtered.with_correlates.pickle'
 	interactome_path = repo_path + 'algorithms/pcsf/inbiomap_temp.tsv'
@@ -62,5 +62,5 @@ if __name__ == "__main__":
 
 	results = pool.map(logit, files)
 
-	pickle.dump(results, open('/scratch/users/lenail/results/logit_gmm_pr_results.pickle', 'wb'))
+	pickle.dump(results, open('/scratch/users/lenail/results/logit_l2_gmm_pr_results.pickle', 'wb'))
 
