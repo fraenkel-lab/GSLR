@@ -8,7 +8,6 @@
 - [Example Usage](#example-usage)
 
 
-
 ## Motivation
 
 The motivation for Graph-Sparse Logistic Regression is to constrain classification to predict a label from a graph-sparse support.
