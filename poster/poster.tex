@@ -1,0 +1,267 @@
+\documentclass[svgnames,final]{beamer}
+\usepackage{etex}
+\mode<presentation> {
+  \usetheme{I6dv}
+}
+\usepackage[utf8]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{amsmath,amsfonts,amsthm}
+\usepackage{mathtools}
+\usepackage{booktabs}
+\usepackage[orientation=landscape,size=a0,scale=1.4]{beamerposter}
+\usepackage{pgfplots}
+\usepackage{comment}
+% \usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\usepackage{etoolbox}
+\pgfplotsset{compat=1.12}
+\usepackage{tikz}
+\usetikzlibrary{positioning,plotmarks,calc,arrows,decorations.markings,intersections,backgrounds}
+\usepackage{subcaption}
+\usepackage{amsmath,amsfonts,amsthm,bm} % Math packages
+
+
+\newcommand{\thetahat}{\ensuremath{\hat{\theta}}}
+\newcommand{\thetatilde}{\ensuremath{\tilde{\theta}}}
+%\tikzexternalize[prefix=tikz_output/]
+
+\usepackage [english]{babel}
+\usepackage [autostyle, english = american]{csquotes}
+\MakeOuterQuote{"}
+
+\newtoggle{plotexperiments}
+\toggletrue{plotexperiments}
+%\togglefalse{plotexperiments}
+
+\newcommand{\numplotsamples}{200}
+
+\newcommand{\red}[1]{\textcolor{red}{#1}}
+\newcommand{\green}[1]{\textcolor{Green}{#1}}
+\newcommand{\blue}[1]{\textcolor{blue}{#1}}
+\newcommand{\eps}{\ensuremath{\epsilon}}
+\newcommand{\R}{\ensuremath{\mathbb{R}}}
+\newcommand{\setC}{\ensuremath{\mathcal{C}}}
+\newcommand{\thetahat}{\ensuremath{\hat{\theta}}}
+\newcommand{\thetastar}{\ensuremath{\theta^*}}
+\newcommand{\Otilde}{\ensuremath{\widetilde{O}}}
+\newcommand{\OPT}{\ensuremath{\textnormal{OPT}}}
+\newcommand{\projH}{\ensuremath{\mathcal{H}}}
+\newcommand{\projT}{\ensuremath{\mathcal{T}}}
+\newcommand{\Usubspaces}{\ensuremath{\mathbb{U}}}
+\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+\newcommand{\specialcell}[2][c]{%
+  \begin{tabular}[#1]{@{}c@{}}#2\end{tabular}}
+
+\newcommand{\prospoint}[1]{\textcolor{Green}{Pros: #1}}
+\newcommand{\conspoint}[1]{\textcolor{red}{Cons: #1}}
+
+\newcommand{\greencell}[1]{\green{#1}}
+\newcommand{\redcell}[1]{\red{#1}}
+\newcommand{\yellowcell}[1]{\textcolor{orange!40!yellow}{#1}}
+
+\title{Graph-Sparse Logistic Regression}
+\author{Alexander LeNail$^1$, Ludwig Schmidt$^2$, Jonathan Li$^1$, Tobias Ehrenberger$^1$, Karen Sachs$^1$, Stefanie Jegelka$^2$, Ernest Fraenkel$^1$}
+\institute{$^1$MIT BE, $^2$MIT CSAIL}
+
+\begin{document}
+
+\begin{frame}
+\vspace{-.5cm}
+\begin{columns}[T]
+
+\begin{column}{.3\linewidth}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Introduction}
+
+		\textbf{Scientists} often use machine learning to \textbf{learn more about their data}, not to predict it. They want to \textbf{interpret} their models. \\
+
+		The simplest way to build an interpretable model is to keep it \textbf{small}. The classic way to accomplish this is with \textbf{LASSO} (L1-regularization).
+
+	\end{block}
+
+	\vspace{2cm}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Problem setup}
+
+		The LASSO does not always find the "right" model. In some cases, we can leverage side-information to help find the right model.
+
+		\vspace{.5cm}
+
+		In our case, side-information is graphical structure among the features.
+
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{images/matrix.pdf}
+		\end{figure}
+
+		We can re-draw each instance as a labeling of the graph's nodes:
+
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{images/graph.pdf}
+		\end{figure}
+
+		The "right" model is a "graph-sparse" model, i.e. a model with a sparse support which is connected on a graph.
+		The goal is therefore to find the \textbf{most predictive connected subgraph}.
+
+	\end{block}
+
+	\vspace{2cm}
+
+\end{column}
+
+\begin{column}{.3\linewidth}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Our approach}
+
+		Main idea:
+
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{images/algo.pdf}
+		\label{fig:test}
+		\end{figure}
+
+		\begin{algorithm}[t]
+		\caption{Graph-Sparse Logistic Regression}
+		\label{alg:gslr}
+		\begin{algorithmic}[1]
+		\Function{GSLR}{$X$, $y$, $G$, $s$, $\eta$, $k$}
+		\State Let $f(X, y, \theta)$ be the logistic loss.
+		\State $\thetahat^0 \gets 0$
+		\For{$i \gets 0, \ldots, k-1$}
+		\State $\thetatilde^{i+1} \gets \thetahat^i - \eta \cdot \nabla f(X, y, \thetahat^i)$
+		\State $\thetahat^{i+1} \gets P_{G,s}(\thetatilde^{i+1})$ \Comment{Graph-sparse projection}
+		\EndFor
+		\State \textbf{return} $\thetahat^k$
+		\EndFunction
+		\end{algorithmic}
+		\end{algorithm}
+
+
+	\end{block}
+
+	\vspace{2cm}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Synthetic Data}
+
+
+		Since we don't have the ground truth subgraph for our real data, we create synthetic data by sampling from the multivariate gaussian defined by the real data, then translating "positive" examples by a "perturbation" vector.
+		$negative = \mathcal{N} (\vec{\mu}, \bm{\Sigma} ) \quad positive = \mathcal{N} (\vec{\mu}, \bm{\Sigma} ) + \vec{x}$
+
+
+		\begin{figure}[h]
+		  \centering
+		\begin{tikzpicture}[
+		declare function={mu1=1;},
+		declare function={mu2=2;},
+		declare function={mu3=2;},
+		declare function={sigma1=0.5;},
+		declare function={sigma2=1;},
+		declare function={normal(\m,\s)=1/(2*\s*sqrt(pi))*exp(-(x-\m)^2/(2*\s^2));},
+		declare function={bivar(\ma,\sa,\mb,\sb)=
+		3.3/(2*pi*\sa*\sb) * exp(-((x-\ma)^2/\sa^2 + (y-\mb)^2/\sb^2))/2;}]
+		\begin{axis}[
+		colormap name=whitered,
+		width=30cm,
+		%     height=10cm,
+		view={35}{65},
+		enlargelimits=false,
+		grid=major,
+		domain=-1:4,
+		y domain=-1:4,
+		samples=26,
+		xlabel=$x_1$,
+		ylabel=$x_2$,
+		zlabel={$P$},
+		]
+
+		\addplot3 [opacity=1,surf,colormap={whitered}{color(0cm)=(white); color(1cm)=(orange!75!red)}] {bivar(mu1,sigma1,mu2,sigma2)};
+		\addplot3 [opacity=0.5,surf,colormap={whiteyellow}{color(0cm)=(white); color(1cm)=(orange!75!yellow)}] {bivar(mu3,sigma1,mu2,sigma2)};
+
+		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu1,sigma1)});
+		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (-1,x,{normal(mu2,sigma2)});
+		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu3,sigma1)});
+
+		\draw [black!50] (axis cs:-1,0,0) -- (axis cs:4,0,0);
+		\draw [black!50] (axis cs:0,-1,0) -- (axis cs:0,4,0);
+
+		\node at (axis cs:-1,1,0.18) [pin=195:$P(x_1)$] {};
+		\node at (axis cs:0.5,4,0.32) [pin=140:$P(x_2)$] {};
+		\node at (axis cs:2.6,4,0.26) [pin=-3:$P(x_2*)$] {};
+		\end{axis}
+		\end{tikzpicture}
+		\caption{A low dimensional cartoon of our synthetic data generation strategy. Here, the pink gaussian represents our original data, from which we sample our negative examples. We sample our positive examples from the orange gaussian by first sampling them from the pink gaussian and translating them by the perturbation vector (in this case $<0, {\mu_x}_2 - {\mu_x}_2 *>$, with $x_2$ in the pathway and $x_1$ not.}
+		\end{figure}
+
+
+
+
+
+	\end{block}
+
+\end{column}
+
+\begin{column}{.3\linewidth}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Experiments}
+
+		We benchmark our technique against the LASSO by how many of the truly "perturbed" features each uses in its support.
+
+		\begin{figure}[h]
+		\centering
+		\begin{subfigure}{.5\textwidth}
+		  \centering
+		  \includegraphics[width=\linewidth]{images/2.pdf}
+		  \caption{scheme 1 -- all datasets, all folds}
+		  \label{fig:sub1}
+		\end{subfigure}%
+		\begin{subfigure}{.5\textwidth}
+		  \centering
+		  \includegraphics[width=\linewidth]{images/1.pdf}
+		  \caption{scheme 2 -- all datasets, all folds}
+		  \label{fig:sub2}
+		\end{subfigure}
+		\begin{subfigure}{.5\textwidth}
+		  \centering
+		  \includegraphics[width=\linewidth]{images/4.pdf}
+		  \caption{scheme 1 -- random dataset, all folds}
+		  \label{fig:sub3}
+		\end{subfigure}%
+		\begin{subfigure}{.5\textwidth}
+		  \centering
+		  \includegraphics[width=\linewidth]{images/3.pdf}
+		  \caption{scheme 2 -- random dataset, all folds}
+		  \label{fig:sub4}
+		\end{subfigure}
+		\caption{L1-Regularized Logistic Regression (blue) versus Graph-Sparse logistic Regression (red). Each trace represents one fold of one dataset, varying sparsity. The bolded trace is the average.}
+		\label{fig:perf}
+		\end{figure}
+
+		We find that GSLR outperforms the LASSO across the board.
+
+		We then use our technique on real Ovarian Cancer data, and find that the support chosen by GSLR is qualitatively superior.
+
+	\end{block}
+
+	\vspace{2cm}
+
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Conclusion}
+
+
+
+	\end{block}
+
+\end{column}
+\end{columns}
+\end{frame}
+\end{document}
