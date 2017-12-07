@@ -112,6 +112,8 @@
 		The "right" model is a "graph-sparse" model, i.e. a model with a sparse support which is connected on a graph.
 		The goal is therefore to find the \textbf{most predictive connected subgraph}.
 
+		(possibly add the logistic loss function here?)
+
 	\end{block}
 
 	\vspace{2cm}
@@ -153,7 +155,7 @@
 
 		\vspace{2cm}
 
-		\textbf{Graph-Sparse Projection:}
+		\textbf{Sparse Projection Operator:}
 
 		Given an arbitrary vector $p \in \R^d$, the projection operator $P_{G,s}$
 		returns a vector $q \in \R^d$ satisfying the following two properties:
@@ -172,7 +174,7 @@
 
 		\vspace{2cm}
 
-		\textbf{Graph-Sparse Projection:}
+		\textbf{Graph-Sparse Projection through PCSF:}
 
 		The Graph-Sparse projection operator $P_{G,s}$ is a carefully-tuned set of Prize-Collecting Steiner Forest instances.
 
@@ -183,6 +185,8 @@
 		\end{equation}
 
 		Intuitively, the goal is to pay as little edge cost to connect the highest prize nodes.
+
+		We project the parameter vector $theta$ onto the graph by setting it as the prize for PCSF.
 
 
 
