@@ -210,7 +210,15 @@
 
 		2. Sample from multivariate $\mathcal{N} (\vec{\mu}, \bm{\Sigma} )$
 
-		3. Sample perturbation vector
+		3. Sample perturbation vector $\vec{x}$:
+
+			\setlength\parindent{96pt}
+
+			scheme 1: $\vec{x_p} = \mathcal{N} (0, \sigma_p^2 )$ if $p \in$ KEGG, 0 otherwise
+
+			scheme 2: $\vec{x_p} = \mathcal{N} (\pm\sigma_p, \sigma_p^2 )$ if $p \in$ KEGG, 0 otherwise
+
+			\setlength\parindent{0pt}
 
 		4. Translate "positive" samples by perturbation vector
 
