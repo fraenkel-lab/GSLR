@@ -94,3 +94,10 @@ ENV/
 
 # Vim swap files
 *.swp
+
+poster/*.aux
+poster/*.fdb_latexmk
+poster/*.fls
+poster/*.nav
+poster/poster.pdf
+poster/*.toc

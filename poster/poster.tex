@@ -22,7 +22,6 @@
 \usepackage{amsmath,amsfonts,amsthm,bm} % Math packages
 
 
-\newcommand{\thetahat}{\ensuremath{\hat{\theta}}}
 \newcommand{\thetatilde}{\ensuremath{\tilde{\theta}}}
 %\tikzexternalize[prefix=tikz_output/]
 
@@ -75,7 +74,13 @@
 \begin{column}{.3\linewidth}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Introduction}
+	\begin{block}{Problem setup}
+    \textbf{Variable selection} in a linear model:
+    {\Large
+    \[
+      y \; = \; \sigma(X \,  \thetastar + e)
+    \]
+    }
 
 		\textbf{Scientists} often use machine learning to \textbf{learn more about their data},
 		not to predict it. They want to \textbf{interpret} their models. \\
