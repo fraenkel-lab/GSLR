@@ -77,9 +77,11 @@
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Introduction}
 
-		\textbf{Scientists} often use machine learning to \textbf{learn more about their data}, not to predict it. They want to \textbf{interpret} their models. \\
+		\textbf{Scientists} often use machine learning to \textbf{learn more about their data},
+		not to predict it. They want to \textbf{interpret} their models. \\
 
-		The simplest way to build an interpretable model is to keep it \textbf{small}. The classic way to accomplish this is with \textbf{LASSO} (L1-regularization).
+		The simplest way to build an interpretable model is to keep it \textbf{small}.
+		The classic way to accomplish this is with \textbf{LASSO} (L1-regularization).
 
 	\end{block}
 
@@ -88,7 +90,8 @@
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Problem setup}
 
-		The LASSO does not always find the "right" model. In some cases, we can leverage side-information to help find the right model.
+		The LASSO does not always find the "right" model. In some cases,
+		we can leverage side-information to help find the right model.
 
 		\vspace{.5cm}
 
@@ -103,7 +106,7 @@
 
 		\begin{figure}[h]
 		\centering
-		\includegraphics[width=\linewidth]{images/graph.pdf}
+		\includegraphics[width=0.8\linewidth]{images/graph.pdf}
 		\end{figure}
 
 		The "right" model is a "graph-sparse" model, i.e. a model with a sparse support which is connected on a graph.
@@ -120,18 +123,10 @@
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Our approach}
 
-		Main idea:
-
-		\begin{figure}[h]
-		\centering
-		\includegraphics[width=\linewidth]{images/algo.pdf}
-		\label{fig:test}
-		\end{figure}
-
-		\begin{algorithm}[t]
-		\caption{Graph-Sparse Logistic Regression}
-		\label{alg:gslr}
-		\begin{algorithmic}[1]
+		% \begin{algorithm}
+		% \caption{Graph-Sparse Logistic Regression}
+		% \label{alg:gslr}
+		\begin{algorithmic}%[1]
 		\Function{GSLR}{$X$, $y$, $G$, $s$, $\eta$, $k$}
 		\State Let $f(X, y, \theta)$ be the logistic loss.
 		\State $\thetahat^0 \gets 0$
@@ -142,18 +137,67 @@
 		\State \textbf{return} $\thetahat^k$
 		\EndFunction
 		\end{algorithmic}
-		\end{algorithm}
+		% \end{algorithm}
+
+
+		\vspace{2cm}
+
+		\textbf{Main idea:}
+
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=\linewidth]{images/algo.pdf}
+		\label{fig:test}
+		\end{figure}
+
+
+		\vspace{2cm}
+
+		\textbf{Graph-Sparse Projection:}
+
+		Given an arbitrary vector $p \in \R^d$, the projection operator $P_{G,s}$
+		returns a vector $q \in \R^d$ satisfying the following two properties:
+		\begin{itemize}
+		\item \textbf{Approximate projection:} The vector $q$ is an approximate projection,
+					i.e., instead of achieving the smallest distance to the input point $p$ among points in the constraint set,
+					the distance achieved by $q$ is within a small constant factor:
+		\begin{equation}
+		\label{eq:approxproj}
+		  \|p - q \|_2^2  \; \leq \; 2 \cdot \min_{q' \textnormal{ is } (G,s)\textnormal{-sparse}} \| p - q'\|_2^2 \; .
+		\end{equation}
+		\item \textbf{Approximate graph sparsity:} The support of the vector $q$ forms
+					a connected component of size at most $6s + 1$ in the graph $G$.
+		\end{itemize}
+
+
+		\vspace{2cm}
+
+		\textbf{Graph-Sparse Projection:}
+
+		The Graph-Sparse projection operator $P_{G,s}$ is a carefully-tuned set of Prize-Collecting Steiner Forest instances.
+
+		The PCSF objective is to minimize:
+
+		\begin{equation}
+			f(F) = \beta \sum_{v\notin V_F} p(v) + \sum_{e\in E_F} c(e) + \omega \cdot \kappa,
+		\end{equation}
+
+		Intuitively, the goal is to pay as little edge cost to connect the highest prize nodes.
+
 
 
 	\end{block}
+\end{column}
 
-	\vspace{2cm}
+\begin{column}{.3\linewidth}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Synthetic Data}
 
 
-		Since we don't have the ground truth subgraph for our real data, we create synthetic data by sampling from the multivariate gaussian defined by the real data, then translating "positive" examples by a "perturbation" vector.
+		Since we don't have the ground truth subgraphs for the real data, \\
+		we create synthetic data by sampling from the multivariate gaussian
+		defined by the real data, then translating "positive" examples by a "perturbation" vector.
 		$negative = \mathcal{N} (\vec{\mu}, \bm{\Sigma} ) \quad positive = \mathcal{N} (\vec{\mu}, \bm{\Sigma} ) + \vec{x}$
 
 
@@ -170,7 +214,7 @@
 		3.3/(2*pi*\sa*\sb) * exp(-((x-\ma)^2/\sa^2 + (y-\mb)^2/\sb^2))/2;}]
 		\begin{axis}[
 		colormap name=whitered,
-		width=30cm,
+		width=25cm,
 		%     height=10cm,
 		view={35}{65},
 		enlargelimits=false,
@@ -193,12 +237,13 @@
 		\draw [black!50] (axis cs:-1,0,0) -- (axis cs:4,0,0);
 		\draw [black!50] (axis cs:0,-1,0) -- (axis cs:0,4,0);
 
-		\node at (axis cs:-1,1,0.18) [pin=195:$P(x_1)$] {};
-		\node at (axis cs:0.5,4,0.32) [pin=140:$P(x_2)$] {};
-		\node at (axis cs:2.6,4,0.26) [pin=-3:$P(x_2*)$] {};
 		\end{axis}
 		\end{tikzpicture}
-		\caption{A low dimensional cartoon of our synthetic data generation strategy. Here, the pink gaussian represents our original data, from which we sample our negative examples. We sample our positive examples from the orange gaussian by first sampling them from the pink gaussian and translating them by the perturbation vector (in this case $<0, {\mu_x}_2 - {\mu_x}_2 *>$, with $x_2$ in the pathway and $x_1$ not.}
+		\caption{A low dimensional cartoon of our synthetic data generation strategy.
+				Here, the pink gaussian represents our original data, from which we sample our negative examples.
+				We sample our positive examples from the orange gaussian by first sampling them from the pink gaussian
+				and translating them by the perturbation vector
+				(in this case $<0, {\mu_x}_2 - {\mu_x}_2 *>$, with $x_2$ in the pathway and $x_1$ not.}
 		\end{figure}
 
 
@@ -207,9 +252,6 @@
 
 	\end{block}
 
-\end{column}
-
-\begin{column}{.3\linewidth}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Experiments}
@@ -242,24 +284,24 @@
 		  \caption{scheme 2 -- random dataset, all folds}
 		  \label{fig:sub4}
 		\end{subfigure}
-		\caption{L1-Regularized Logistic Regression (blue) versus Graph-Sparse logistic Regression (red). Each trace represents one fold of one dataset, varying sparsity. The bolded trace is the average.}
+		\caption{L1-Regularized Logistic Regression (blue) versus Graph-Sparse logistic Regression (red).
+				Each trace represents one fold of one dataset, varying sparsity. The bolded trace is the average.}
 		\label{fig:perf}
 		\end{figure}
 
-		We find that GSLR outperforms the LASSO across the board.
-
-		We then use our technique on real Ovarian Cancer data, and find that the support chosen by GSLR is qualitatively superior.
+		We then use our technique on real Ovarian Cancer data,
+		and find that the support chosen by GSLR is qualitatively superior.
 
 	\end{block}
 
 	\vspace{2cm}
 
-	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Conclusion}
+	% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	% \begin{block}{Conclusion}
 
 
 
-	\end{block}
+	% \end{block}
 
 \end{column}
 \end{columns}
