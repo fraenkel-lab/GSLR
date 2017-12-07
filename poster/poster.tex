@@ -66,6 +66,11 @@
 
 \begin{document}
 
+\newlength{\gextlength}
+\setlength{\gextlength}{14pt}
+\newlength{\gselradius}
+\setlength{\gselradius}{38pt}
+
 \begin{frame}
 \vspace{-.5cm}
 \begin{columns}[T]
@@ -74,49 +79,59 @@
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Problem setup}
+		
+    \vspace{-.8cm}
+
     \textbf{Variable selection} in a linear model:
     {\Large
     \[
-      y \; = \; \sigma(X \,  \thetastar + e)
+      y \; = \; \sigma(X \,  \thetastar)
     \]
     }
 
-		\textbf{Scientists} often use machine learning to \textbf{learn more about their data},
-		not to predict it. They want to \textbf{interpret} their models. \\
+    \vspace{-.7cm}
 
-		The simplest way to build an interpretable model is to keep it \textbf{small}.
-		The classic way to accomplish this is with \textbf{LASSO} (L1-regularization).
+    \begin{itemize}
+      \item Data matrix $X \in \R^{n \times d}$\\[.2cm]
+      \item Unknown parameters $\thetastar \in \R^d$\\[.2cm]
+      \item Binary labels $y \in \{0,1\}^n$\\[.2cm]
+      \item $\sigma: \R \rightarrow \R$ is the logistic function $\sigma(x) = \frac{1}{1 + e^{-x}}$
+    \end{itemize}
+
+    \vspace{1.2cm}
+    \textbf{This work:} our goal is to select a \textbf{graph-sparse} set of variables.\\[.5cm]
+    $\quad\rightarrow$ \textbf{Statistical efficiency:} fewer samples for same error.\\[.3cm]
+    $\quad\rightarrow$ \textbf{Interpretability:} graph-structure in many applications.
+
+    \vspace{1.2cm}
+    \textbf{Graph sparsity}
+		\begin{itemize}
+  		\item Every variable (parameter index) corresponds to a node.\\[.2cm]
+			\item Selected variables form a \textbf{connected subgraph.}
+    \end{itemize}
+
+    \input{graph_sparsity_picture}
 
 	\end{block}
 
-	\vspace{2cm}
+	\vspace{1.0cm}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Problem setup}
+	\begin{block}{Our motivation: graph-structed data in biology}
+		Protein expression data with a \textbf{protein-protein interation network.}\\[-.2cm]
+		\begin{figure}[h]
+		\centering
+		\includegraphics[width=.8\linewidth]{images/matrix.pdf}
+		\end{figure}
 
-		The LASSO does not always find the "right" model. In some cases,
-		we can leverage side-information to help find the right model.
-
-		\vspace{.5cm}
-
-		In our case, side-information is graphical structure among the features.
+		Graph given by prior knowledge from biology:\\[-.6cm]
 
 		\begin{figure}[h]
 		\centering
-		\includegraphics[width=\linewidth]{images/matrix.pdf}
+		\includegraphics[width=0.7\linewidth]{images/graph.pdf}
 		\end{figure}
 
-		We can re-draw each instance as a labeling of the graph's nodes:
-
-		\begin{figure}[h]
-		\centering
-		\includegraphics[width=0.8\linewidth]{images/graph.pdf}
-		\end{figure}
-
-		The "right" model is a "graph-sparse" model, i.e. a model with a sparse support which is connected on a graph.
-		The goal is therefore to find the \textbf{most predictive connected subgraph}.
-
-		(possibly add the logistic loss function here?)
+		\vspace{-1.5cm}
 
 	\end{block}
 
@@ -128,72 +143,47 @@
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Our approach}
+    We build on results in \textbf{compressive sensing} for graph-sparse data.\\[.3cm]
+		$\qquad$\textcolor{darkgray}{[Huang, Zhang, Metaxas, 2011], [Hegde, Indyk, Schmidt, 2015]}
+		\vspace{1.2cm}
 
-		% \begin{algorithm}
-		% \caption{Graph-Sparse Logistic Regression}
-		% \label{alg:gslr}
-		\begin{algorithmic}%[1]
-		\Function{GSLR}{$X$, $y$, $G$, $s$, $\eta$, $k$}
-		\State Let $f(X, y, \theta)$ be the logistic loss.
-		\State $\thetahat^0 \gets 0$
-		\For{$i \gets 0, \ldots, k-1$}
-		\State $\thetatilde^{i+1} \gets \thetahat^i - \eta \cdot \nabla f(X, y, \thetahat^i)$
-		\State $\thetahat^{i+1} \gets P_{G,s}(\thetatilde^{i+1})$ \Comment{Graph-sparse projection}
-		\EndFor
-		\State \textbf{return} $\thetahat^k$
-		\EndFunction
-		\end{algorithmic}
-		% \end{algorithm}
-
-
-		\vspace{2cm}
-
-		\textbf{Main idea:}
-
-		\begin{figure}[h]
-		\centering
-		\includegraphics[width=\linewidth]{images/algo.pdf}
-		\label{fig:test}
-		\end{figure}
-
-
-		\vspace{2cm}
-
-		\textbf{Sparse Projection Operator:}
-
-		Given an arbitrary vector $p \in \R^d$, the projection operator $P_{G,s}$
-		returns a vector $q \in \R^d$ satisfying the following two properties:
+		$\rightarrow$ We introduce \textbf{Graph-Sparse Logistic Regression} (GSLR).\\[.2cm]
 		\begin{itemize}
-		\item \textbf{Approximate projection:} The vector $q$ is an approximate projection,
-					i.e., instead of achieving the smallest distance to the input point $p$ among points in the constraint set,
-					the distance achieved by $q$ is within a small constant factor:
-		\begin{equation}
-		\label{eq:approxproj}
-		  \|p - q \|_2^2  \; \leq \; 2 \cdot \min_{q' \textnormal{ is } (G,s)\textnormal{-sparse}} \| p - q'\|_2^2 \; .
-		\end{equation}
-		\item \textbf{Approximate graph sparsity:} The support of the vector $q$ forms
-					a connected component of size at most $6s + 1$ in the graph $G$.
+			\item Gradient descent on logistic loss.\\[.2cm]
+			\item Efficient projections onto the graph sparse set.
 		\end{itemize}
 
+		\vspace{1cm}
+    
+		\begin{tikzpicture}
+    \node [rectangle,draw,black,line width=.2cm,text width=33cm,align=left] {\begin{algorithmic}[1]
+			\vspace{-.3cm}
+			\Function{GSLR}{$X$, $y$, $G$, $s$, $\eta$, $k$}
+			\State Let $f(X, y, \theta)$ be the logistic loss.
+			\State $\thetahat^0 \gets 0$
+			\For{$i \gets 0, \ldots, k-1$}
+			\State $\thetatilde^{i+1} \gets \thetahat^i - \eta \cdot \nabla f(X, y, \thetahat^i)$
+			\State $\thetahat^{i+1} \gets P_{G,s}(\thetatilde^{i+1})$ \Comment{Graph-sparse projection \hspace{.5cm}$ \;$ }
+			\EndFor
+			\State \textbf{return} $\thetahat^k$
+			\EndFunction
+			\vspace{.7cm}
+			\end{algorithmic}};
+    \end{tikzpicture}
+	\end{block}
 
-		\vspace{2cm}
+	\vspace{1.0cm}
 
-		\textbf{Graph-Sparse Projection through PCSF:}
-
-		The Graph-Sparse projection operator $P_{G,s}$ is a carefully-tuned set of Prize-Collecting Steiner Forest instances.
-
-		The PCSF objective is to minimize:
-
-		\begin{equation}
-			f(F) = \beta \sum_{v\notin V_F} p(v) + \sum_{e\in E_F} c(e) + \omega \cdot \kappa,
-		\end{equation}
-
-		Intuitively, the goal is to pay as little edge cost to connect the highest prize nodes.
-
-		We project the parameter vector $theta$ onto the graph by setting it as the prize for PCSF.
-
-
-
+	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+	\begin{block}{Efficient graph-sparse projections}
+	\vspace{-.5cm}
+	\textbf{Projection problem}: Given $b \in \R^d$ and a graph-sparse set $\mathbb{G}$, find
+	{\Large
+	\[
+		\Omega^* \; = \; \argmin_{\Omega \in \mathbb{G}} \, \norm{b  - b_{\Omega}} \; .
+	\]
+	}
+	\input{middle-col-low.tex}
 	\end{block}
 \end{column}
 
@@ -247,11 +237,11 @@
 		zlabel={$P$},
 		]
 
-		\addplot3 [opacity=1,surf,colormap={whitered}{color(0cm)=(white); color(1cm)=(orange!75!red)}] {bivar(mu1,sigma1,mu2,sigma2)};
-		\addplot3 [opacity=0.5,surf,colormap={whiteyellow}{color(0cm)=(white); color(1cm)=(orange!75!yellow)}] {bivar(mu3,sigma1,mu2,sigma2)};
+		%\addplot3 [opacity=1,surf,colormap={whitered}{color(0cm)=(white); color(1cm)=(orange!75!red)}] {bivar(mu1,sigma1,mu2,sigma2)};
+		%\addplot3 [opacity=0.5,surf,colormap={whiteyellow}{color(0cm)=(white); color(1cm)=(orange!75!yellow)}] {bivar(mu3,sigma1,mu2,sigma2)};
 
-		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu1,sigma1)});
-		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (-1,x,{normal(mu2,sigma2)});
+		%\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu1,sigma1)});
+		%\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (-1,x,{normal(mu2,sigma2)});
 		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu3,sigma1)});
 
 		\draw [black!50] (axis cs:-1,0,0) -- (axis cs:4,0,0);

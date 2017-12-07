@@ -1,0 +1,70 @@
+\begin{columns}
+\column{.5\textwidth}
+  \begin{center}
+  \begin{tikzpicture}[scale=1.5]
+  \tikzstyle{mythick}=[line width=.12cm];
+  \tikzstyle{gn}=[draw=black,circle,inner sep=1pt,minimum size=.9cm,mythick]
+  \tikzstyle{ed}=[draw=black,mythick]
+  \tikzstyle{selection}=[double=blue!20,double distance=34pt,mythick,draw=blue!50,line cap=round,line join=round];
+  \node [gn] (a) at (0,0) {};
+  \node [gn] (b) at (3,0) {};
+  \node [gn] (c) at (2,2.8) {};
+  \node [gn] (d) at (3.5,1.7) {};
+  \node [gn] (e) at (-1.4, 1) {};
+  \node [gn] (f) at (.4,3.0) {};
+  \node [gn] (g) at (.3,1.8) {};
+  \node [gn] (h) at (-.6,2.3) {};
+  \draw [ed] (a) -- (b);
+  \draw [ed] (c) -- (d);
+  \draw [ed] (a) -- (e);
+  \draw [ed] (d) -- (b);
+  \draw [ed] (a) -- (c);
+  \draw [ed] (b) -- (c);
+  \draw [ed] (a) -- (g);
+  \draw [ed] (g) -- (c);
+  \draw [ed] (g) -- (h);
+  \draw [ed] (e) -- (h);
+  \draw [ed] (f) -- (h);
+  \begin{scope}[on background layer]
+  \draw [selection] (-.6,2.3) -- (-1.4,1) -- (0,0);
+  \end{scope}
+  \end{tikzpicture}
+
+  \green{Graph-sparse}\\[.5cm]
+  \end{center}
+\column{.5\textwidth}
+  \begin{center}
+  \begin{tikzpicture}[scale=1.5]
+  \tikzstyle{mythick}=[line width=.12cm];
+  \tikzstyle{gn}=[draw=black,circle,mythick,inner sep=1pt,minimum size=.9cm]
+  \tikzstyle{ed}=[draw=black,mythick]
+  \tikzstyle{selection}=[double=blue!20,double distance=9pt,mythick,draw=blue!50,line cap=round,line join=round];
+  \node [gn] (a) at (0,0) {};
+  \node [gn] (b) at (3,0) {};
+  \node [gn] (c) at (2,2.8) {};
+  \node [gn] (d) at (3.5,1.7) {};
+  \node [gn] (e) at (-1.4, 1) {};
+  \node [gn] (f) at (.4,3.0) {};
+  \node [gn] (g) at (.3,1.8) {};
+  \node [gn] (h) at (-.6,2.3) {};
+  \draw [ed] (a) -- (b);
+  \draw [ed] (c) -- (d);
+  \draw [ed] (a) -- (e);
+  \draw [ed] (d) -- (b);
+  \draw [ed] (a) -- (c);
+  \draw [ed] (b) -- (c);
+  \draw [ed] (a) -- (g);
+  \draw [ed] (g) -- (c);
+  \draw [ed] (g) -- (h);
+  \draw [ed] (e) -- (h);
+  \draw [ed] (f) -- (h);
+  \begin{scope}[on background layer]
+  \node [circle,mythick,draw=blue!50,fill=blue!20,inner sep=0pt,minimum size=\gselradius] at (f) {};
+  \node [circle,mythick,draw=blue!50,fill=blue!20,inner sep=0pt,minimum size=\gselradius] at (b) {};
+  \node [circle,mythick,draw=blue!50,fill=blue!20,inner sep=0pt,minimum size=\gselradius] at (g) {};
+  \end{scope}
+  \end{tikzpicture}
+
+  \red{Not graph-sparse}
+  \end{center}
+\end{columns}
