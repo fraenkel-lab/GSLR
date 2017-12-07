@@ -101,3 +101,4 @@ poster/*.fls
 poster/*.nav
 poster/poster.pdf
 poster/*.toc
+poster/*snm

@@ -18,7 +18,6 @@
 \pgfplotsset{compat=1.12}
 \usepackage{tikz}
 \usetikzlibrary{positioning,plotmarks,calc,arrows,decorations.markings,intersections,backgrounds}
-\usepackage{subcaption}
 \usepackage{amsmath,amsfonts,amsthm,bm} % Math packages
 
 
@@ -277,26 +276,23 @@
 
 		\begin{figure}[h]
 		\centering
-		\begin{subfigure}{.5\textwidth}
-		  \centering
-		  \includegraphics[width=\linewidth]{images/2.pdf}
-		  \label{fig:sub1}
-		\end{subfigure}%
-		\begin{subfigure}{.5\textwidth}
-		  \centering
-		  \includegraphics[width=\linewidth]{images/1.pdf}
-		  \label{fig:sub2}
-		\end{subfigure}
-		\begin{subfigure}{.5\textwidth}
-		  \centering
-		  \includegraphics[width=\linewidth]{images/4.pdf}
-		  \label{fig:sub3}
-		\end{subfigure}%
-		\begin{subfigure}{.5\textwidth}
-		  \centering
-		  \includegraphics[width=\linewidth]{images/3.pdf}
-		  \label{fig:sub4}
-		\end{subfigure}
+		%\begin{subfigure}{.5\textwidth}
+		%  \centering
+		  \includegraphics[width=.5\linewidth]{images/2.pdf}
+		%\end{subfigure}%
+		%\begin{subfigure}{.5\textwidth}
+		%  \centering
+		  \includegraphics[width=.5\linewidth]{images/1.pdf}
+    \newline
+		%\end{subfigure}
+		%\begin{subfigure}{.5\textwidth}
+		%  \centering
+		  \includegraphics[width=.5\linewidth]{images/4.pdf}
+		%\end{subfigure}%
+		%\begin{subfigure}{.5\textwidth}
+		%  \centering
+		  \includegraphics[width=.5\linewidth]{images/3.pdf}
+		%\end{subfigure}
 		\label{fig:perf}
 		\end{figure}
 
