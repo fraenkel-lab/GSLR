@@ -19,7 +19,13 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,plotmarks,calc,arrows,decorations.markings,intersections,backgrounds}
 \usepackage{amsmath,amsfonts,amsthm,bm} % Math packages
-
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,
+    urlcolor=cyan,
+}
 
 \newcommand{\thetatilde}{\ensuremath{\tilde{\theta}}}
 %\tikzexternalize[prefix=tikz_output/]
@@ -78,8 +84,8 @@
 \begin{column}{.3\linewidth}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Problem setup}
-		
+	\begin{block}{Problem Setup}
+
     \vspace{-.8cm}
 
     \textbf{Variable selection} in a linear model:
@@ -100,7 +106,7 @@
 
     \vspace{1.2cm}
     \textbf{This work:} our goal is to select a \textbf{graph-sparse} set of variables.\\[.5cm]
-    $\quad\rightarrow$ \textbf{Statistical efficiency:} fewer samples for same error.\\[.3cm]
+    $\quad\rightarrow$ \textbf{Statistical efficiency:} fewer variables for same error.\\[.3cm]
     $\quad\rightarrow$ \textbf{Interpretability:} graph-structure in many applications.
 
     \vspace{1.2cm}
@@ -117,7 +123,7 @@
 	\vspace{1.0cm}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Our motivation: graph-structed data in biology}
+	\begin{block}{Motivation: graph-structed data in biology}
 		Protein expression data with a \textbf{protein-protein interation network.}\\[-.2cm]
 		\begin{figure}[h]
 		\centering
@@ -142,7 +148,7 @@
 \begin{column}{.3\linewidth}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Our approach}
+	\begin{block}{Approach}
     We build on results in \textbf{compressive sensing} for graph-sparse data.\\[.3cm]
 		$\qquad$\textcolor{darkgray}{[Huang, Zhang, Metaxas, 2011], [Hegde, Indyk, Schmidt, 2015]}
 		\vspace{1.2cm}
@@ -154,7 +160,7 @@
 		\end{itemize}
 
 		\vspace{1cm}
-    
+
 		\begin{tikzpicture}
     \node [rectangle,draw,black,line width=.2cm,text width=33cm,align=left] {\begin{algorithmic}[1]
 			\vspace{-.3cm}
@@ -175,7 +181,7 @@
 	\vspace{1.0cm}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	\begin{block}{Efficient graph-sparse projections}
+	\begin{block}{Efficient Graph-Sparse Projections}
 	\vspace{-.5cm}
 	\textbf{Projection problem}: Given $b \in \R^d$ and a graph-sparse set $\mathbb{G}$, find
 	{\Large
@@ -237,11 +243,11 @@
 		zlabel={$P$},
 		]
 
-		%\addplot3 [opacity=1,surf,colormap={whitered}{color(0cm)=(white); color(1cm)=(orange!75!red)}] {bivar(mu1,sigma1,mu2,sigma2)};
-		%\addplot3 [opacity=0.5,surf,colormap={whiteyellow}{color(0cm)=(white); color(1cm)=(orange!75!yellow)}] {bivar(mu3,sigma1,mu2,sigma2)};
+		\addplot3 [opacity=1,surf,colormap={whitered}{color(0cm)=(white); color(1cm)=(orange!75!red)}] {bivar(mu1,sigma1,mu2,sigma2)};
+		\addplot3 [opacity=0.5,surf,colormap={whiteyellow}{color(0cm)=(white); color(1cm)=(orange!75!yellow)}] {bivar(mu3,sigma1,mu2,sigma2)};
 
-		%\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu1,sigma1)});
-		%\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (-1,x,{normal(mu2,sigma2)});
+		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu1,sigma1)});
+		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (-1,x,{normal(mu2,sigma2)});
 		\addplot3 [domain=-1:4,samples=31, samples y=0, thin, smooth] (x,4,{normal(mu3,sigma1)});
 
 		\draw [black!50] (axis cs:-1,0,0) -- (axis cs:4,0,0);
@@ -258,11 +264,12 @@
 
 	\end{block}
 
+	\vspace{1.0cm}
 
 	%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 	\begin{block}{Experimental Results}
 
-		We benchmark our technique against the LASSO by how many of the truly "perturbed" features each uses in its support.
+		We benchmark GSLR against the LASSO by how many of the truly "perturbed" features each uses in its support.
 
 		\begin{figure}[h]
 		\centering
@@ -291,14 +298,18 @@
 
 	\end{block}
 
-	\vspace{2cm}
+	\vspace{1.0cm}
 
 	% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	% \begin{block}{Conclusion}
+	\begin{block}{Conclusion}
 
+		Source code and experimental code at \href{https://github.com/fraenkel-lab/gslr}{https://github.com/fraenkel-lab/gslr}
 
+		\vspace{1.0cm}
 
-	% \end{block}
+		\textbf{Future Work:} Benchmark against related approaches which incorporate the feature graph.
+
+	\end{block}
 
 \end{column}
 \end{columns}
