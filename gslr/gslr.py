@@ -18,6 +18,11 @@ from pcst_fast import pcst_fast
 __all__ = ["GraphOptions", "gslr", "softmax_gradient", "softmax_loss", "graph_proj_sparsity", "proj_softmax_matrix"]
 
 
+GraphOptions = collections.namedtuple(
+    'GraphOptions',
+    ['edges', 'root', 'num_clusters', 'pruning'])
+
+
 @numba.jit
 def softmax_gradient(X, y, W):
     """
@@ -102,12 +107,6 @@ def softmax_loss(X, y, W):
         total_loss += prod_normalized[ii, cur_y] - math.log(denom[ii])
 
     return -total_loss / n
-
-
-
-GraphOptions = collections.namedtuple(
-    'GraphOptions',
-    ['edges', 'root', 'num_clusters', 'pruning'])
 
 
 def graph_proj_sparsity(prizes, sparsity_low, sparsity_high, opts, verbosity_level, max_num_iter=30, edge_costs=None, edge_costs_multiplier=None):

@@ -3,6 +3,15 @@ sftp-config.json
 experiments/generated_data
 **/**_pr_**.pickle
 
+
+poster/*.aux
+poster/*.fdb_latexmk
+poster/*.fls
+poster/*.nav
+poster/*.toc
+poster/*snm
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -94,11 +103,3 @@ ENV/
 
 # Vim swap files
 *.swp
-
-poster/*.aux
-poster/*.fdb_latexmk
-poster/*.fls
-poster/*.nav
-poster/poster.pdf
-poster/*.toc
-poster/*snm
