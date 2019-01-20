@@ -2,7 +2,7 @@
 sftp-config.json
 experiments/generated_data
 **/**_pr_**.pickle
-
+.venv
 
 poster/*.aux
 poster/*.fdb_latexmk
